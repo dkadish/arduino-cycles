@@ -8,6 +8,18 @@
 #include <math.h>
 #include "Cycles.h"
 
+unsigned long Cycle::adjustTime(unsigned long time){
+    return time + _period_offset;
+}
+
+void Cycle::setPeriod(unsigned long time, int period){
+    unsigned long current_time = adjustTime(time);
+    float expand = ((float)period)/_period;
+    
+    _period_offset = ((unsigned long)(current_time * expand)) - time; //TODO does this resolve sign issues?
+    _period = period;
+}
+
 int SineWave::value(unsigned long time)
 {
     float portion = (time % _period)/((float) _period) * 2 * M_PI; // normalize the proportion to 2PI
