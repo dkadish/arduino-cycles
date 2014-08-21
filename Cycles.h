@@ -25,4 +25,10 @@ class SineWave : public Cycle {
     int value(unsigned long time);
 };
 
+class Heartbeat : public Cycle {
+  public:
+    Heartbeat(int period, int amplitude): Cycle( period, amplitude ){};
+    int value(unsigned long time);
+};
+
 #endif
