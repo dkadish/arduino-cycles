@@ -23,8 +23,32 @@ void Cycle::setPeriod(unsigned long time, int period){
     _period = period;
 }
 
+void Cycle::setAmplitude(int amplitude){
+    _amplitude = amplitude;
+}
+
+/* Changes the amplitude of the system, but fades this change in over time.
+   fade is the time to fade in millis.
+*/
+void Cycle::setAmplitude(unsigned long time, int amplitude, int fade_time){
+    _start_amplitude = _amplitude;
+    _target_amplitude = amplitude;
+    _amplitude_fade_start = time;
+    _amplitude_fade_end = time + fade_time;
+}
+
+void Cycle::fadeAmplitude(unsigned long time){
+    if( time < _amplitude_fade_end ){
+        int amp_diff = _target_amplitude - _start_amplitude;
+        float time_frac = ((float)(time - _amplitude_fade_start))/(_amplitude_fade_end - _amplitude_fade_start);
+        _amplitude = _start_amplitude + ((int)(amp_diff * time_frac));
+    }
+}
+
 int SineWave::value(unsigned long time)
 {
+    fadeAmplitude(time);
+    
     float portion = adjustTime(time)/((float) _period) * 2 * M_PI; // normalize the proportion to 2PI
     return (int) ((sin(portion) + 1) * _amplitude) / 2;
 }
@@ -34,6 +58,8 @@ const char ECG[253] = {27,28,42,72,113,153,194,228,255,250,216,157,96,42,13,1,0,
 
 int Heartbeat::value(unsigned long time)
 {
+    fadeAmplitude(time);    
+    
     float portion = adjustTime(time)/((float) _period) * N_ECG; // normalize the proportion to 2PI
     return (int)(ECG[(int)portion] * (_amplitude/255.0));
 }
