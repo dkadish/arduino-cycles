@@ -8,21 +8,24 @@
 #include <math.h>
 #include "Cycles.h"
 
+/* Adjust the time for the period offset and the period length.
+   Returns the time as a portion of the current period.
+*/
 unsigned long Cycle::adjustTime(unsigned long time){
-    return time + _period_offset;
+    return (time + _period_offset) % _period;
 }
 
 void Cycle::setPeriod(unsigned long time, int period){
     unsigned long current_time = adjustTime(time);
     float expand = ((float)period)/_period;
     
-    _period_offset = ((unsigned long)(current_time * expand)) - time; //TODO does this resolve sign issues?
+    _period_offset = ((unsigned long)(current_time * expand)) - (time % period); 
     _period = period;
 }
 
 int SineWave::value(unsigned long time)
 {
-    float portion = (time % _period)/((float) _period) * 2 * M_PI; // normalize the proportion to 2PI
+    float portion = adjustTime(time)/((float) _period) * 2 * M_PI; // normalize the proportion to 2PI
     return (int) ((sin(portion) + 1) * _amplitude) / 2;
 }
 
@@ -31,6 +34,6 @@ const char ECG[253] = {27,28,42,72,113,153,194,228,255,250,216,157,96,42,13,1,0,
 
 int Heartbeat::value(unsigned long time)
 {
-    float portion = (time % _period)/((float) _period) * N_ECG; // normalize the proportion to 2PI
+    float portion = adjustTime(time)/((float) _period) * N_ECG; // normalize the proportion to 2PI
     return (int)(ECG[(int)portion] * (_amplitude/255.0));
 }
