@@ -39,10 +39,19 @@ class SineWave : public Cycle {
     int value(unsigned long time);
 };
 
+class SquareWave : public Cycle {
+  public:
+    SquareWave(int period, int amplitude): Cycle( period, amplitude ) {};
+    int value(unsigned long time);
+};
+
 class Heartbeat : public Cycle {
   public:
     Heartbeat(int period, int amplitude): Cycle( period, amplitude ){};
     int value(unsigned long time);
+    void setAveraging(int averaging);
+  private:
+    int _averaging = 0;
 };
 
 #endif
