@@ -7,7 +7,7 @@
 #######################################
 
 Cycle	KEYWORD1
-SineWave    KEYWORD1
+SineWave	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
